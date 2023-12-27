@@ -1,20 +1,26 @@
 import socket
 import threading
+import sys
 
 def send_data(data):
-    #open a socket for the client choosing IPv4 with TCP 
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(('127.0.0.1', 8888))
-
-    data_str = ','.join(map(str, data))
-    client.send(data_str.encode())
-
-    sorted_data = client.recv(1024).decode()
-    sorted_numbers = [int(num) for num in sorted_data.split(',')]
-
-    print(f"Received sorted list from server: {sorted_numbers}")
-
-    client.close()
+ try:
+     #open a socket for the client choosing IPv4 with TCP 
+     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+     client.connect(('127.0.0.1', 8888))
+ 
+     data_str = ','.join(map(str, data))
+     client.send(data_str.encode())
+ 
+     sorted_data = client.recv(1024).decode()
+     sorted_numbers = [int(num) for num in sorted_data.split(',')]
+ 
+     print(f"Received sorted list from server: {sorted_numbers}")
+ 
+     client.close()
+ 
+ except Exception as e:
+        print(f"Can't connect to the server. Error: {e}")
+        sys.exit()
 
 def handle_user():
     unsorted_list = []
