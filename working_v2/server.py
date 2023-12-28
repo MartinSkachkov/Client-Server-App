@@ -16,7 +16,7 @@ def multi_threaded_selection_sort(arr, num_threads=2):
 
     start_time = time.time()
 
-    for i in range(num_threads):
+    for i in range(num_threads): #0,1
         start = i * segment_size
         end = (i + 1) * segment_size if i != num_threads - 1 else len(arr)
         thread = threading.Thread(target=selection_sort, args=(arr, start, end))
@@ -32,23 +32,28 @@ def multi_threaded_selection_sort(arr, num_threads=2):
 
 def handle_client(client_socket): #,last_interaction_time
     try:
-        #get the array
         data = client_socket.recv(1024)  # assuming data is sent in chunks of 1024 bytes
 
-        #decode() - transform bytes received into string
-        #split the string into substrings by the delim ,
-        #convert each substring into an int
         numbers = [int(num) for num in data.decode().split(',')]
-
+        numbersCpy = numbers.copy()
         print(f"Received unsorted list: {numbers}")
 
-        # Perform parallel selection sort
+        # Single-threaded selection sort
+        start_time_single = time.time()
+        selection_sort(numbers, 0, len(numbers))
+        end_time_single = time.time()
+        elapsed_time_single = end_time_single - start_time_single
+        print(f"Single-threaded selection sort took {elapsed_time_single:.6f} seconds.")
+
+        # Reset the array for the multi-threaded version
+        numbers = numbersCpy.copy()
+        print(f"Reset the list to original: {numbers}")
+        
+        # Multi-threaded selection sort with 2 threads
         multi_threaded_selection_sort(numbers)
 
-        #map(func, iterable object) -> convert each number into string
-        #join all strings into one with delim ','
         sorted_data = ','.join(map(str, numbers))
-        client_socket.send(sorted_data.encode()) #encode() so that we can send bytes not string
+        client_socket.send(sorted_data.encode())
         
         #last_interaction_time[0] = time.time()
         client_socket.close()
@@ -57,27 +62,25 @@ def handle_client(client_socket): #,last_interaction_time
         print(f"Error handling client: {e}")
 
 def start_server():
-    #open a connection socket for the server choosing IPv4 with TCP
+
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #telling this will be the server(a.k.a hosting)
-    server.bind(('127.0.0.1', 8888)) #(should be private or loopback addr.)
-    server.listen(5) #limit the possible connections waithing for acception to 5
+    server.bind(('127.0.0.1', 8888))
+    server.listen()
 
     print("Server listening on port 8888...")
 
     #last_interaction_time = [time.time()] # Initialize the last interaction time
 
-
     while True:
-         # Проверка за активност в основния цикъл
+        # Проверка за активност в основния цикъл
         #if time.time() - last_interaction_time[0] > 30:
         #    print("No activity for 2 minutes. Closing the server.")
         #    break
         try:
-            client, addr = server.accept() #client is the communitacion socket
+            client, addr = server.accept()
             print(f"Accepted connection from {addr[0]}:{addr[1]}")
         
-            #1 thread for each client to run paralel
+            #1 thread for each client to run parallel
             client_handler = threading.Thread(target=handle_client, args=(client,)) #last_interaction_time
             client_handler.start()
         except socket.error as e:
