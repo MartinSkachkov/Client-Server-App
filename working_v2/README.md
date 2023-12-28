@@ -202,7 +202,7 @@
     elapsed_time = end_time - start_time
     print(f"Multi-threaded selection sort took {elapsed_time:.6f} seconds.")
     ```
-8.  `segment_size = len(arr) // num_threads`: Разделяме дължината на масива (`arr`) на броя на нишките (`num_threads=2`), за да определим размера на всеки сегмент от масива, който всяка нишка ще сортира.
+1.  `segment_size = len(arr) // num_threads`: Разделяме дължината на масива (`arr`) на броя на нишките (`num_threads=2`), за да определим размера на всеки сегмент от масива, който всяка нишка ще сортира.
     
 9.  `threads = []`: Създаваме празен списък, в който ще съхраняваме обекти от тип нишки.
     
