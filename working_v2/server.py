@@ -2,6 +2,8 @@ import socket
 import threading
 import time
 
+stop_server = False
+
 def selection_sort(arr, start, end):
     for i in range(start, end):
         min_index = i
@@ -62,6 +64,7 @@ def handle_client(client_socket): #,last_interaction_time
         print(f"Error handling client: {e}")
 
 def start_server():
+    global stop_server
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(('127.0.0.1', 8888))
@@ -71,7 +74,7 @@ def start_server():
 
     #last_interaction_time = [time.time()] # Initialize the last interaction time
 
-    while True:
+    while not stop_server:
         # Проверка за активност в основния цикъл
         #if time.time() - last_interaction_time[0] > 30:
         #    print("No activity for 2 minutes. Closing the server.")
@@ -90,4 +93,9 @@ def start_server():
     server.close()
 
 if __name__ == "__main__":
-    start_server()
+    try:
+        start_server()
+    except KeyboardInterrupt:
+        print("Server stopped by the user.")
+        stop_server = True  # Signal the server to stop
+        time.sleep(2)  # Allow some time for existing threads to finish

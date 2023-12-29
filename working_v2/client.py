@@ -24,19 +24,36 @@ def send_data(data):
 
 def handle_user():
     unsorted_list = []
-    n = int(input("Enter number of elements you want to sort: "))
-    for i in range (0, n):
-        elem = int(input())
-        unsorted_list.append(elem)
+
+    while True:
+        try:
+            n = int(input("Enter number of elements you want to sort: "))
+            break  # Излизаме от цикъла, ако въвеждането е успешно
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
+    for i in range(n):
+        while True:
+            try:
+                elem = int(input(f"Enter element {i+1}: "))
+                unsorted_list.append(elem)
+                break  # Излизаме от цикъла, ако въвеждането е успешно
+            except ValueError:
+                print("Invalid input. Please enter a valid number.")
 
     print(f"Sending unsorted list to server: {unsorted_list}")
+
     send_data(unsorted_list)
 
 if __name__ == "__main__":
     user_input = ""
+
     while user_input.lower() != "stop":
         user_input = input("Enter 'stop' to stop the client execution, 'no' to continue: ")
         if user_input.lower() != "stop":
-            handle_user()
+            if user_input.lower() != "no":
+                print("Invalid input. Please enter 'no' to continue.")
+            else:
+                handle_user()
 
     print("Exiting!")
