@@ -12,6 +12,32 @@ def selection_sort(arr, start, end):
                 min_index = j
         arr[i], arr[min_index] = arr[min_index], arr[i]
 
+def merge(arr, start, mid, end):
+    left = arr[start:mid]
+    right = arr[mid:end]
+    
+    i = j = 0
+    k = start
+
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            arr[k] = left[i]
+            i += 1
+        else:
+            arr[k] = right[j]
+            j += 1
+        k += 1
+
+    while i < len(left):
+        arr[k] = left[i]
+        i += 1
+        k += 1
+
+    while j < len(right):
+        arr[k] = right[j]
+        j += 1
+        k += 1
+
 def multi_threaded_selection_sort(arr, num_threads=2):
     segment_size = len(arr) // num_threads
     threads = []
@@ -27,6 +53,10 @@ def multi_threaded_selection_sort(arr, num_threads=2):
 
     for thread in threads:
         thread.join()
+
+    #Merge the segments
+    mid = (num_threads - 1) * segment_size
+    merge(arr, 0, mid, len(arr))
 
     end_time = time.time()
     elapsed_time = end_time - start_time
